@@ -83,10 +83,45 @@ def find_city_with_most_closer_capitals(country, file_path):
     most_closer_capitals_city = max(results, key=lambda x: x['closer_capitals_count'])
     return most_closer_capitals_city
 
+def get_closer_foreign_capitals(city, country, file_path):
+    # Load the data
+    world_cities = pd.read_csv(file_path)
+    capitals = world_cities[world_cities['capital'] == 'primary'][['city', 'lat', 'lng', 'country']]
+    
+    # Find the specific city and the capital of the country
+    specific_city = world_cities[(world_cities['country'] == country) & (world_cities['city'] == city)].iloc[0]
+    own_capital = capitals[capitals['country'] == country].iloc[0]
+    
+    # Calculate the distance from the specific city to its own capital
+    own_capital_distance = haversine(specific_city['lng'], specific_city['lat'], own_capital['lng'], own_capital['lat'])
+    
+    # Initialize an empty list to store closer foreign capitals
+    closer_capitals = []
+    
+    # Calculate distances to all foreign capitals and filter
+    for index, capital in capitals.iterrows():
+        if capital['country'] != country:
+            distance = haversine(specific_city['lng'], specific_city['lat'], capital['lng'], capital['lat'])
+            if distance < own_capital_distance:
+                closer_capitals.append((capital['city'], distance, capital['country']))
+    
+    # Sort capitals by distance
+    closer_capitals.sort(key=lambda x: x[1])
+
+    # Prepare the result in the requested format
+    result = {
+        'city': city,
+        'closer_capitals_count': len(closer_capitals),
+        'closer_capitals': closer_capitals
+    }
+    
+    return result
+
 # Example usage
 file_path = 'resources/worldcities.csv'  # Replace with the actual path to the CSV file
-country = 'United States'
-result = find_city_with_most_closer_capitals(country, file_path)
+country = 'Germany'
+# result = find_city_with_most_closer_capitals(country, file_path)
+result = get_closer_foreign_capitals('Ludwigshafen', country, file_path=file_path)
 print("City:", result['city'])
 print("Number of closer foreign capitals:", result['closer_capitals_count'])
 print("List of closer capitals and distances:")
