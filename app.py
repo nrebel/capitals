@@ -73,8 +73,15 @@ def get_map():
         'closer_capitals': data['closer_capitals']
     }
     map = create_map_with_arcs(map_data, file_path)
-    return map._repr_html_()
+    map_html = map._repr_html_()
 
+    # Prepare data for displaying information about closer capitals
+    info_data = {
+        'selected_city': data['city'],
+        'closer_capitals': data['closer_capitals']
+    }
+    
+    return jsonify({'map': map_html, 'info': info_data})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=2222, debug=True)
+    app.run(host='0.0.0.0', port=1111, debug=True)

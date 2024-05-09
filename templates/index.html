@@ -48,6 +48,22 @@
     </form>
     <div id="mapContainer"></div>
 </div>
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-8" id="mapContainer" style="height: 400px;"></div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    Information about Capitals
+                </div>
+                <div class="card-body">
+                    <p id="infoText"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
@@ -65,10 +81,17 @@ function updateCities(country) {
 }
 
 function showMap() {
-    $.post('/get_map', $('#mapForm').serialize(), function(html) {
-        $('#mapContainer').html(html);
-    });
+    $.post('/get_map', $('#mapForm').serialize(), function(response) {
+        $('#mapContainer').html(response.map);
+        var infoText = 'City with the most foreign capitals: ' + response.info.selected_city + '<ul>';
+        response.info.closer_capitals.forEach(function(capital) {
+            infoText += '<li>' + capital[0] + ' - ' + capital[1].toFixed(2) + ' km</li>';
+        });
+        infoText += '</ul>';
+        $('#infoText').html(infoText);
+    }, 'json');
 }
+
 </script>
 </body>
 </html>
