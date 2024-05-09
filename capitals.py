@@ -76,7 +76,8 @@ def find_city_with_most_closer_capitals(country, file_path):
         results.append({
             'city': city['city'],
             'closer_capitals_count': len(closer_capitals),
-            'closer_capitals': closer_capitals
+            'closer_capitals': closer_capitals,
+            'own_capital_distance': own_capital_distance
         })
     
     # Find the city with the maximum number of closer foreign capitals
@@ -91,7 +92,6 @@ def get_closer_foreign_capitals(city, country, file_path):
     # Find the specific city and the capital of the country
     specific_city = world_cities[(world_cities['country'] == country) & (world_cities['city'] == city)].iloc[0]
     own_capital = capitals[capitals['country'] == country].iloc[0]
-    
     # Calculate the distance from the specific city to its own capital
     own_capital_distance = haversine(specific_city['lng'], specific_city['lat'], own_capital['lng'], own_capital['lat'])
     
@@ -112,18 +112,41 @@ def get_closer_foreign_capitals(city, country, file_path):
     result = {
         'city': city,
         'closer_capitals_count': len(closer_capitals),
-        'closer_capitals': closer_capitals
+        'closer_capitals': closer_capitals,
+        'own_capital_distance': own_capital_distance
     }
     
     return result
 
+def find_city_with_most_closer_capitals_worldwide(file_path):
+    world_cities = pd.read_csv(file_path)
+    countries = world_cities['country'].unique()
+
+    winning_city = []
+    count = 0
+
+    print(countries)
+    for country in countries:
+        print("processing country: ", country)
+        res = find_city_with_most_closer_capitals(country, file_path)
+        if res['closer_capitals_count'] > count:
+            count = res['closer_capitals_count']
+            winning_city = res
+            print(f"City: ", winning_city['city'], " (", country, " distance to own capital: ", winning_city['own_capital_distance'], "km)")
+            print("Number of closer foreign capitals:", winning_city['closer_capitals_count'])
+            
+    return winning_city
+    
+
 # Example usage
 file_path = 'resources/worldcities.csv'  # Replace with the actual path to the CSV file
-country = 'France'
-city = 'Metz'
-result = find_city_with_most_closer_capitals(country, file_path)
-#result = get_closer_foreign_capitals(city, country, file_path=file_path)
-print(f"City: ", result['city'])
+#country = 'Brazil'
+#city = 'Mannheim'
+#result = find_city_with_most_closer_capitals(country, file_path)
+#result = get_closer_foreign_capitals(city, country, file_path)
+result = find_city_with_most_closer_capitals_worldwide(file_path)
+
+print(f"City: ", result['city'], " (distance to own capital: ", result['own_capital_distance'], "km)")
 print("Number of closer foreign capitals:", result['closer_capitals_count'])
 print("List of closer capitals and distances:")
 for capital in result['closer_capitals']:
