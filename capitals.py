@@ -9,18 +9,19 @@ def create_map_with_arcs(city_data, file_path):
     target_city = world_cities[(world_cities['country'] == city_data['city_data']['country']) &
                                (world_cities['city'] == city_data['city_data']['city'])].iloc[0]
     own_capital = capitals[capitals['country'] == city_data['city_data']['country']].iloc[0]
+    count = len(city_data['closer_capitals'])
 
     # Create map centered around the target city
     city_map = folium.Map(location=[target_city['lat'], target_city['lng']], zoom_start=4)
 
     # Add marker for the target city
     folium.Marker([target_city['lat'], target_city['lng']], 
-                  popup=f"{city_data['city_data']['city']} (Own City)", 
+                  popup=f"{city_data['city_data']['city']} (Own City), {count} closer capitals", 
                   icon=folium.Icon(color='green')).add_to(city_map)
 
     # Add marker for the own capital with different color arc
     folium.Marker([own_capital['lat'], own_capital['lng']], 
-                  popup=f"{own_capital['city']} (Own Capital)", 
+                  popup=f"{own_capital['city']} (Own Capital, {haversine(target_city['lng'], target_city['lat'], own_capital['lng'], own_capital['lat']):.2f} km)", 
                   icon=folium.Icon(color='red')).add_to(city_map)
 
     # Draw an arc to own capital
@@ -34,7 +35,7 @@ def create_map_with_arcs(city_data, file_path):
         folium.PolyLine(locations=[[target_city['lat'], target_city['lng']], [cap_info['lat'], cap_info['lng']]],
                         color="blue", weight=1, tooltip=f"{capital[1]:.2f} km").add_to(city_map)
         folium.Marker([cap_info['lat'], cap_info['lng']], 
-                      popup=f"{cap_info['city']} ({cap_info['country']})", 
+                      popup=f"{cap_info['city']} ({cap_info['country']}, {capital[1]:.2f} km)", 
                       icon=folium.Icon(color='blue')).add_to(city_map)
 
     return city_map
