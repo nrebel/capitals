@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Capitals Visualizer</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1>Capitals Visualizer</h1>
+    <form id="mapForm">
+        <div class="form-group">
+            <label for="country">Country:</label>
+            <select name="country" id="country" class="form-control" onchange="updateCities(this.value)">
+                <option value="">Select a country</option>
+                {% for country in countries %}
+                <option value="{{ country }}">{{ country }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="city">City (optional):</label>
+            <select name="city" id="city" class="form-control"></select>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="showMap()">Show Map</button>
+    </form>
+    <div id="mapContainer"></div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+function updateCities(country) {
+    if (!country) {
+        $('#city').empty().prop('disabled', true);
+        return;
+    }
+    $.getJSON('/get_cities/' + country, function(data) {
+        $('#city').empty().prop('disabled', false).append('<option value="">Please select a city</option>');
+        data.forEach(function(city) {
+            $('#city').append($('<option>').val(city).text(city));
+        });
+    });
+}
+
+function showMap() {
+    $.post('/get_map', $('#mapForm').serialize(), function(html) {
+        $('#mapContainer').html(html);
+    });
+}
+</script>
+</body>
+</html>
