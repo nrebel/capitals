@@ -119,10 +119,11 @@ def get_closer_foreign_capitals(city, country, file_path):
 
 # Example usage
 file_path = 'resources/worldcities.csv'  # Replace with the actual path to the CSV file
-country = 'Germany'
-# result = find_city_with_most_closer_capitals(country, file_path)
-result = get_closer_foreign_capitals('Ludwigshafen', country, file_path=file_path)
-print("City:", result['city'])
+country = 'France'
+city = 'Metz'
+result = find_city_with_most_closer_capitals(country, file_path)
+#result = get_closer_foreign_capitals(city, country, file_path=file_path)
+print(f"City: ", result['city'])
 print("Number of closer foreign capitals:", result['closer_capitals_count'])
 print("List of closer capitals and distances:")
 for capital in result['closer_capitals']:
