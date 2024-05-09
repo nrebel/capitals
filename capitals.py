@@ -62,6 +62,15 @@ def find_city_with_most_closer_capitals(country, file_path):
     
     results = []
     
+    if len(country_cities) == 1 or len(country_capital) == 0:
+        results.append({
+            'city': country_cities['city'],
+            'closer_capitals_count': 0,
+            'closer_capitals': [],
+            'own_capital_distance': 0
+        })
+        return results[0]
+    
     for index, city in country_cities.iterrows():
         city_capitals_distances = []
         own_capital_distance = haversine(city['lng'], city['lat'], country_capital.iloc[0]['lng'], country_capital.iloc[0]['lat'])
@@ -123,6 +132,7 @@ def find_city_with_most_closer_capitals_worldwide(file_path):
     countries = world_cities['country'].unique()
 
     winning_city = []
+    winning_country = ""
     count = 0
 
     print(countries)
@@ -132,19 +142,20 @@ def find_city_with_most_closer_capitals_worldwide(file_path):
         if res['closer_capitals_count'] > count:
             count = res['closer_capitals_count']
             winning_city = res
+            winning_country = country
             print(f"City: ", winning_city['city'], " (", country, " distance to own capital: ", winning_city['own_capital_distance'], "km)")
             print("Number of closer foreign capitals:", winning_city['closer_capitals_count'])
             
-    return winning_city
+    return winning_city, winning_country
     
 
 # Example usage
 file_path = 'resources/worldcities.csv'  # Replace with the actual path to the CSV file
-#country = 'Brazil'
+#country = 'Netherlands'
 #city = 'Mannheim'
-#result = find_city_with_most_closer_capitals(country, file_path)
 #result = get_closer_foreign_capitals(city, country, file_path)
-result = find_city_with_most_closer_capitals_worldwide(file_path)
+#result = find_city_with_most_closer_capitals(country, file_path)
+result, country = find_city_with_most_closer_capitals_worldwide(file_path)
 
 print(f"City: ", result['city'], " (distance to own capital: ", result['own_capital_distance'], "km)")
 print("Number of closer foreign capitals:", result['closer_capitals_count'])
@@ -157,5 +168,6 @@ map_data = {
     'closer_capitals': result['closer_capitals']
 }
 
-map = create_map_with_arcs(map_data, file_path=file_path)
+print("result: ", result)
+map = create_map_with_arcs(map_data, file_path)
 map.show_in_browser()
