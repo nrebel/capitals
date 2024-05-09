@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-
 import folium
 
 def create_map_with_arcs(city_data, file_path):
@@ -143,7 +142,7 @@ def find_city_with_most_closer_capitals_worldwide(file_path):
             count = res['closer_capitals_count']
             winning_city = res
             winning_country = country
-            print(f"City: ", winning_city['city'], " (", country, " distance to own capital: ", winning_city['own_capital_distance'], "km)")
+            print("City: ", winning_city['city'], " (", winning_country, " distance to own capital: ", winning_city['own_capital_distance'], "km)")
             print("Number of closer foreign capitals:", winning_city['closer_capitals_count'])
             
     return winning_city, winning_country
@@ -168,6 +167,5 @@ map_data = {
     'closer_capitals': result['closer_capitals']
 }
 
-print("result: ", result)
 map = create_map_with_arcs(map_data, file_path)
 map.show_in_browser()
