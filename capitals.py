@@ -147,26 +147,3 @@ def find_city_with_most_closer_capitals_worldwide(file_path):
             print("Number of closer foreign capitals:", winning_city['closer_capitals_count'])
             
     return winning_city, winning_country
-    
-
-# Example usage
-#file_path = 'resources/worldcities.csv'  # Replace with the actual path to the CSV file
-#country = 'Netherlands'
-#city = 'Amsterdam'
-#result = get_closer_foreign_capitals(city, country, file_path)
-#result = find_city_with_most_closer_capitals(country, file_path)
-#result, country = find_city_with_most_closer_capitals_worldwide(file_path)
-
-#print(f"City: ", result['city'], " (distance to own capital: ", result['own_capital_distance'], "km)")
-#print("Number of closer foreign capitals:", result['closer_capitals_count'])
-#print("List of closer capitals and distances:")
-#for capital in result['closer_capitals']:
-#    print(f"{capital[0]} ({capital[2]}): {capital[1]:.2f} km")
-    
-#map_data = {
- #   'city_data': {'city': result['city'], 'country': country},
- #   'closer_capitals': result['closer_capitals']
-#}
-
-#map = create_map_with_arcs(map_data, file_path)
-#map.show_in_browser()
