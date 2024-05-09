@@ -4,10 +4,32 @@
     <meta charset="UTF-8">
     <title>Capitals Visualizer</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .info-box {
+          padding: 20px;
+          margin: 20px;
+          background-color: #f9f9f9;
+          border-left: 5px solid #2196F3;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .info-box h2 {
+          margin-top: 0;
+          color: #333;
+        }
+        .info-box p {
+          color: #666;
+        }
+      </style>
 </head>
 <body>
 <div class="container">
     <h1>Capitals Visualizer</h1>
+    <div class="info-box">
+        <h3>How to use</h3>
+        <p>Chose a country and press the button to visualize the chosen country's city with the most foreign capitals that are closer than its own capital.
+           If you select a specific city for a chosen country then the map shows all foreign captials that are closer to that city than the capital of its own country. 
+        </p>
+      </div>
     <form id="mapForm">
         <div class="form-group">
             <label for="country">Country:</label>
