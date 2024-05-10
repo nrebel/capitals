@@ -15,7 +15,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///capitals.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
-file_path = 'worldcities.csv'
+file_path = 'resources/worldcities.csv'
+world_cities = pd.read_csv(file_path)
+countries = sorted(world_cities['country'].unique())
 
 with app.app_context():
     db.create_all()  # Create database tables based on models if not exist
@@ -48,10 +50,6 @@ def get_or_create_data(country, city=None):
         db.session.commit()
 
     return data
-# Assuming that the CSV file is in the same directory as the script
-file_path = 'resources/worldcities.csv'
-world_cities = pd.read_csv(file_path)
-countries = sorted(world_cities['country'].unique())
 
 @app.route('/', methods=['GET'])
 def index():    
@@ -82,6 +80,17 @@ def get_map():
     }
     
     return jsonify({'map': map_html, 'info': info_data})
+
+@app.route('/list_countries')
+def list_countries():
+    entries = CountryMap.query.order_by(CountryMap.country).all()
+    countries_info = {}
+    for entry in entries:
+        countries_info.setdefault(entry.country, []).append({
+            'city_with_most_capitals': entry.city_with_most_capitals,
+            'data': entry.data
+        })
+    return jsonify(countries_info)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=1111, debug=True)
