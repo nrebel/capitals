@@ -57,6 +57,8 @@ def find_city_with_most_closer_capitals(country, file_path):
     world_cities = pd.read_csv(file_path)
     # Filter capitals and cities in the specified country
     capitals = world_cities[world_cities['capital'] == 'primary'][['city', 'lat', 'lng', 'country']]
+    capitals = capitals.drop_duplicates(subset=['country'])
+
     country_cities = world_cities[world_cities['country'] == country][['city', 'lat', 'lng']]
     country_capital = capitals[capitals['country'] == country]
     
@@ -82,6 +84,8 @@ def find_city_with_most_closer_capitals(country, file_path):
         
         # Count foreign capitals closer than the own capital
         closer_capitals = [(cap[0], cap[1], cap[2]) for cap in city_capitals_distances if cap[1] < own_capital_distance]
+        closer_capitals.sort(key=lambda x: x[1])
+
         results.append({
             'city': city['city'],
             'closer_capitals_count': len(closer_capitals),
@@ -97,7 +101,7 @@ def get_closer_foreign_capitals(city, country, file_path):
     # Load the data
     world_cities = pd.read_csv(file_path)
     capitals = world_cities[world_cities['capital'] == 'primary'][['city', 'lat', 'lng', 'country']]
-    
+    capitals = capitals.drop_duplicates(subset=['country'])
     # Find the specific city and the capital of the country
     specific_city = world_cities[(world_cities['country'] == country) & (world_cities['city'] == city)].iloc[0]
     own_capital = capitals[capitals['country'] == country].iloc[0]
