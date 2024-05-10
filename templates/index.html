@@ -1,86 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Capitals Visualizer</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* Reducing padding and margin around the map and table */
-        #mapContainer {
-            margin-bottom: 0px;  /* Remove the bottom margin completely */
-            padding-bottom: 0px;  /* Ensure no padding below the map */
-        }
+{% extends 'base.html' %}
 
-        .row {
-            margin-bottom: 0px !important;
-        }
-
-        .card {
-            margin-top: 5px;  /* Minimal space above the card for aesthetic spacing, adjust as needed */
-        }
-
-        .container, .container-fluid {
-            padding-left: 0px;
-            padding-right: 0px;
-            padding-bottom: 0px;
-        }
-    
-        /* Additional styles to ensure consistent and close alignment */
-        .card {
-            margin-top: 0px;  /* Remove top margin of the card for closer appearance */
-        }
-        .info-box {
-          padding: 20px;
-          margin: 20px;
-          background-color: #f9f9f9;
-          border-left: 5px solid #2196F3;
-          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .info-box h2 {
-          margin-top: 0;
-          color: #333;
-        }
-        .info-box p {
-          color: #666;
-        }
-      </style>
-</head>
-<body>
-<div class="container">
-    <h1>Capitals Visualizer</h1>
-    <div class="info-box">
-        <h3>How to use</h3>
-        <p>Chose a country and press the button to visualize the chosen country's city with the most foreign capitals that are closer than its own capital.
-           If you select a specific city for a chosen country then the map shows all foreign captials that are closer to that city than the capital of its own country. 
-        </p>
-      </div>
-    <form id="mapForm">
-        <div class="form-group">
-            <label for="country">Country:</label>
-            <select name="country" id="country" class="form-control" onchange="updateCities(this.value)">
-                <option value="">Select a country</option>
-                {% for country in countries %}
-                <option value="{{ country }}">{{ country }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="city">City (optional):</label>
-            <select name="city" id="city" class="form-control"></select>
-        </div>
-        <button type="button" class="btn btn-primary" onclick="showMap()">Show Map</button>
-    </form>
-    <div id="mapContainer"></div>
+{% block content %}
+<h1>Capitals Visualizer</h1>
+<div class="info-box">
+    <h3>How to use</h3>
+    <p>Choose a country and press the button to visualize the chosen country's city with the most foreign capitals that are closer than its own capital. If you select a specific city for a chosen country, then the map shows all foreign capitals that are closer to that city than the capital of its own country.</p>
 </div>
-<div class="container mt-3">
-    <div class="row">
-        <div class="col-12" id="mapContainer" style="height: 400px;"></div>
+<form id="mapForm">
+    <div class="form-group">
+        <label for="country">Country:</label>
+        <select name="country" id="country" class="form-control" onchange="updateCities(this.value)">
+            <option value="">Select a country</option>
+            {% for country in countries %}
+            <option value="{{ country }}">{{ country }}</option>
+            {% endfor %}
+        </select>
     </div>
+    <div class="form-group">
+        <label for="city">City (optional):</label>
+        <select name="city" id="city" class="form-control"></select>
+    </div>
+    <button type="button" class="btn btn-primary" onclick="showMap()">Show Map</button>
+</form>
+<div id="mapContainer" style="height: 400px;"></div>
+<div class="container mt-3">
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header" id="cityName">
-                    <!-- Content will be filled by JavaScript -->
+                    <!-- City name will be filled by JavaScript -->
                 </div>
                 <div class="card-body">
                     <table class="table table-striped">
@@ -93,7 +41,7 @@
                             </tr>
                         </thead>
                         <tbody id="infoTable">
-                            <!-- Content will be filled by JavaScript -->
+                            <!-- Table content will be filled by JavaScript -->
                         </tbody>
                     </table>
                 </div>
@@ -101,10 +49,9 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
-
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{% block scripts %}
 <script>
 function updateCities(country) {
     if (!country) {
@@ -126,13 +73,11 @@ function showMap() {
         var tableContent = '';
         response.info.closer_capitals.forEach(function(capital) {
             ++count;
-            tableContent += '<tr><td>' + count + '</td><td>' + capital[0] + '</td><td>' + capital[2] + '</td><td>' +  capital[1].toFixed(2) + '</td></tr>';
+            tableContent += '<tr><td>' + count + '</td><td>' + capital[0] + '</td><td>' + capital[2] + '</td><td>' + capital[1].toFixed(2) + ' km</td></tr>';
         });
         $('#infoTable').html(tableContent);
-        $('#cityName').html('<h3> City with most closer capitals: ' + response.info.selected_city + '</h3>');
+        $('#cityName').html('<h3>' + response.info.selected_city + '</h3>');
     }, 'json');
 }
-
 </script>
-</body>
-</html>
+{% endblock %}

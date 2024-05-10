@@ -55,6 +55,10 @@ def get_or_create_data(country, city=None):
 def index():    
     return render_template('index.html', countries=countries)
 
+@app.route('/stored-countries')
+def stored_countries():
+    return render_template('stored_countries.html')
+
 @app.route('/get_cities/<country>')
 def get_cities(country):
     cities = sorted(world_cities[world_cities['country'] == country]['city'].unique())
@@ -88,7 +92,7 @@ def list_countries():
     for entry in entries:
         countries_info.setdefault(entry.country, []).append({
             'city_with_most_capitals': entry.city_with_most_capitals,
-            'data': entry.data
+            'data': entry.data  # Ensure this data is in a JSON-serializable format
         })
     return jsonify(countries_info)
 
