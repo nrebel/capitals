@@ -49,14 +49,27 @@
     <div id="mapContainer"></div>
 </div>
 <div class="container mt-3">
-    <div class="cenetr">
+    <div class="row">
+        <div class="col-md-8" id="mapContainer" style="height: 400px;"></div>
         <div class="col-md-4">
             <div class="card">
-                <div class="card-header">
-                    Information about Capitals
+                <div class="card-header" id="cityName">
+                    <!-- Content will be filled by JavaScript -->
                 </div>
-                <div class="info-box">
-                    <p id="infoText"></p>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Capital City</th>
+                                <th>Country</th>
+                                <th>Distance (km)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="infoTable">
+                            <!-- Content will be filled by JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -82,16 +95,13 @@ function showMap() {
     $.post('/get_map', $('#mapForm').serialize(), function(response) {
         $('#mapContainer').html(response.map);
         var count = 0;
+        var tableContent = '';
         response.info.closer_capitals.forEach(function(capital) {
             ++count;
+            tableContent += '<tr><td>' + count + '</td><td>' + capital[0] + '</td><td>' + capital[2] + '</td><td>' +  capital[1].toFixed(2) + '</td></tr>';
         });
-        var infoText = 'City with the most closer foreign capitals: ' + response.info.selected_city + '(' + count + ')<ul>';
-        response.info.closer_capitals.forEach(function(capital) {
-            //infoText += '<li>' + capital + '</li>';
-            infoText += '<li>' + capital[0] + ' - ' + capital[2] + ', ' + capital[1].toFixed(2) + ' km</li>';
-        });
-        infoText += '</ul>';
-        $('#infoText').html(infoText);
+        $('#infoTable').html(tableContent);
+        $('#cityName').html('<h3>' + response.info.selected_city + '</h3>');
     }, 'json');
 }
 
