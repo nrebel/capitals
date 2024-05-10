@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Stored Country Data</h1>
+<div id="countriesList"></div> <!-- Container for dynamically loaded country data -->
+{% endblock %}
+
+{% block scripts %}
+<style>
+    .mt-3, .mb-3 {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+    h4 {
+        margin-top: 20px;
+        color: #007bff; /* Bootstrap primary color */
+    }
+    h5 {
+        margin-top: 5px;
+        color: #6c757d; /* Bootstrap secondary color */
+    }
+    table {
+        margin-top: 10px;
+    }
+</style>
+
+<script>
+function loadStoredCountries() {
+    $.getJSON('/list_countries', function(data) {
+        if ($.isEmptyObject(data)) {
+            $('#countriesList').html('<p>No data available.</p>');
+            return;
+        }
+        var content = '<div class="mt-3">';
+        $.each(data, function(country, entries) {
+            // Assume each 'entry' corresponds to one city with the most closer capitals
+            entries.forEach(function(entry) {
+                var details = JSON.parse(entry.data); // Parsing each entry's data
+                content += '<div class="mb-3">';
+                content += '<h4>' + country + '</h4>'; // Country name as main heading
+                content += '<h5>' + entry.city_with_most_capitals + '</h5>'; // Subheading with the city having most closer capitals
+                content += '<table class="table table-sm table-bordered"><thead><tr><th>Capital City</th><th>Country</th><th>Distance (km)</th></tr></thead><tbody>';
+
+                details.closer_capitals.forEach(function(capital) {
+                    content += '<tr><td>' + capital[0] + '</td><td>' + capital[2] + '</td><td>' + capital[1].toFixed(2) + ' km</td></tr>';
+                });
+
+                content += '</tbody></table>';
+                content += '</div>';
+            });
+        });
+        content += '</div>';
+        $('#countriesList').html(content);
+    }).fail(function() {
+        $('#countriesList').html('<p>Error loading data.</p>');
+    });
+}
+
+$(document).ready(function() {
+    loadStoredCountries();  // Ensure this function is called when the document is ready
+});
+</script>
+{% endblock %}
