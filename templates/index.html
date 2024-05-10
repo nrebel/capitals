@@ -5,6 +5,30 @@
     <title>Capitals Visualizer</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Reducing padding and margin around the map and table */
+        #mapContainer {
+            margin-bottom: 0px;  /* Remove the bottom margin completely */
+            padding-bottom: 0px;  /* Ensure no padding below the map */
+        }
+
+        .row {
+            margin-bottom: 0px !important;
+        }
+
+        .card {
+            margin-top: 5px;  /* Minimal space above the card for aesthetic spacing, adjust as needed */
+        }
+
+        .container, .container-fluid {
+            padding-left: 0px;
+            padding-right: 0px;
+            padding-bottom: 0px;
+        }
+    
+        /* Additional styles to ensure consistent and close alignment */
+        .card {
+            margin-top: 0px;  /* Remove top margin of the card for closer appearance */
+        }
         .info-box {
           padding: 20px;
           margin: 20px;
@@ -50,8 +74,10 @@
 </div>
 <div class="container mt-3">
     <div class="row">
-        <div class="col-md-8" id="mapContainer" style="height: 400px;"></div>
-        <div class="col-md-4">
+        <div class="col-12" id="mapContainer" style="height: 400px;"></div>
+    </div>
+    <div class="row">
+        <div class="col-12">
             <div class="card">
                 <div class="card-header" id="cityName">
                     <!-- Content will be filled by JavaScript -->
@@ -75,6 +101,8 @@
         </div>
     </div>
 </div>
+
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
@@ -101,7 +129,7 @@ function showMap() {
             tableContent += '<tr><td>' + count + '</td><td>' + capital[0] + '</td><td>' + capital[2] + '</td><td>' +  capital[1].toFixed(2) + '</td></tr>';
         });
         $('#infoTable').html(tableContent);
-        $('#cityName').html('<h3>' + response.info.selected_city + '</h3>');
+        $('#cityName').html('<h3> City with most closer capitals: ' + response.info.selected_city + '</h3>');
     }, 'json');
 }
 
