@@ -23,7 +23,6 @@
         margin-top: 10px;
     }
 </style>
-
 <script>
 function loadStoredCountries() {
     $.getJSON('/list_countries', function(data) {
@@ -39,10 +38,11 @@ function loadStoredCountries() {
                 content += '<div class="mb-3">';
                 content += '<h4>' + country + '</h4>'; // Country name as main heading
                 content += '<h5>' + entry.city_with_most_capitals + '</h5>'; // Subheading with the city having most closer capitals
-                content += '<table class="table table-sm table-bordered"><thead><tr><th>Capital City</th><th>Country</th><th>Distance (km)</th></tr></thead><tbody>';
+                content += '<table class="table table-sm table-bordered"><thead><tr><th>#</th><th>Capital City</th><th>Country</th><th>Distance (km)</th></tr></thead><tbody>';
 
-                details.closer_capitals.forEach(function(capital) {
-                    content += '<tr><td>' + capital[0] + '</td><td>' + capital[2] + '</td><td>' + capital[1].toFixed(2) + ' km</td></tr>';
+                // Enumerate the capitals
+                details.closer_capitals.forEach(function(capital, index) {
+                    content += '<tr><td>' + (index + 1) + '</td><td>' + capital[0] + '</td><td>' + capital[2] + '</td><td>' + capital[1].toFixed(2) + ' km</td></tr>';
                 });
 
                 content += '</tbody></table>';

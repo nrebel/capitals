@@ -22,6 +22,7 @@ countries = sorted(world_cities['country'].unique())
 with app.app_context():
     db.create_all()  # Create database tables based on models if not exist
 
+    
 def get_or_create_data(country, city=None):
     if city:
         map_data = CityMap.query.filter_by(country=country, city=city).first()
