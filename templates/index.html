@@ -1,50 +1,34 @@
 {% extends 'base.html' %}
-{% block content %}
-    <h1>Capitals Visualizer</h1>
-    <div class="info-box">
-        <h3>How to use</h3>
-        <p>Choose a country and press the button to visualize the chosen country's city with the most foreign capitals that are closer than its own capital.
-           If you select a specific city for a chosen country then the map shows all foreign capitals that are closer to that city than the capital of its own country. 
-        </p>
-    </div>
-    <form id="mapForm">
-        <div class="form-group">
-            <label for="country">Country:</label>
-            <select name="country" id="country" class="form-control" onchange="updateCities(this.value)">
-                <option value="">Select a country</option>
-                {% for country in countries %}
-                <option value="{{ country }}">{{ country }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="city">City (optional):</label>
-            <select name="city" id="city" class="form-control"></select>
-        </div>
-        <button type="button" class="btn btn-primary" onclick="showMap()">Show Map</button>
-    </form>
-    <div id="mapContainer"></div>
-{% endblock %}
+
 {% block scripts %}
 <script>
-    $(document).ready(function() {
-        // Function to get URL parameters
-        
-    
-        // Extract parameters and trigger map loading if present
-        var country = getURLParameter('country');
-        var city = getURLParameter('city');
-        if (country) {
-            $('#country').val(country);
-            updateCities(country, city);
+$(document).ready(function() {
+    // Function to get URL parameters
+    function getURLParameter(name) {
+        let regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(window.location.href);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    // Function to update cities based on the selected country
+    function updateCities(country, presetCity = null) {
+        if (!country) {
+            $('#city').empty().prop('disabled', true);
+            return;
         }
-    
-        $('#country').change(function() {
-            updateCities($(this).val());
+        $.getJSON('/get_cities/' + country, function(data) {
+            $('#city').empty().prop('disabled', false).append('<option value="">Please select a city</option>');
+            data.forEach(function(city) {
+                let isSelected = (city === presetCity);
+                $('#city').append($('<option>').val(city).text(city).prop('selected', isSelected));
+            });
+            if (presetCity) showMap();  // Automatically display the map if city is provided
         });
-    
-        
-    });
+    }
+
+    // Function to show the map and closer capitals table
     function showMap() {
         $.post('/get_map', $('#mapForm').serialize(), function(response) {
             $('#mapContainer').html(response.map);
@@ -52,31 +36,86 @@
             var tableContent = '';
             response.info.closer_capitals.forEach(function(capital) {
                 ++count;
-                tableContent += '<tr><td>' + count + '</td><td>' + capital[0] + '</td><td>' + capital[2] + '</td><td>' + capital[1].toFixed(2) + '</td></tr>';
+                tableContent += '<tr><td>' + count + '</td><td>' + capital[0] + '</td><td>' + capital[2] + '</td><td>' + capital[1].toFixed(2) + ' km</td></tr>';
             });
             $('#infoTable').html(tableContent);
             $('#cityName').html('<h3>' + response.info.selected_city + '</h3>');
         }, 'json');
-    };
+    }
 
-    function getURLParameter(name) {
-        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
-    };
+    // Handling country and city selection changes
+    $('#country').change(function() {
+        updateCities($(this).val());
+    });
 
-    // Load cities when a country is selected
-    function updateCities(country, city) {
-        if (!country) {
-            $('#city').empty().prop('disabled', true);
-            return;
-        }
-        $.getJSON('/get_cities/' + country, function(data) {
-            $('#city').empty().prop('disabled', false).append('<option value="">Please select a city</option>');
-            data.forEach(function(cityOption) {
-                $('#city').append($('<option>').val(cityOption).text(cityOption).prop('selected', cityOption === city));
-            });
-            if (city) showMap();  // Automatically display the map if city is provided
-        });
-    };
+    $('#mapForm').submit(function(event) {
+        event.preventDefault();
+        showMap();
+    });
+
+    // Check for initial URL parameters and set up the page
+    let country = getURLParameter('country');
+    let city = getURLParameter('city');
+    if (country && city) {
+        $('#country').val(country);
+        updateCities(country, city);
+    }
+
+    // Add event listener to button
+    $('#mapForm button').click(showMap);
+});
 
 </script>
+{% endblock %}
+
+{% block content %}
+<h1>Capitals Visualizer</h1>
+<div class="info-box">
+    <h3>How to use</h3>
+    <p>Choose a country and press the button to visualize the chosen country's city with the most foreign capitals that are closer than its own capital.
+       If you select a specific city for a chosen country then the map shows all foreign capitals that are closer to that city than the capital of its own country.</p>
+</div>
+<form id="mapForm">
+    <div class="form-group">
+        <label for="country">Country:</label>
+        <select name="country" id="country" class="form-control">
+            <option value="">Select a country</option>
+            {% for country in countries %}
+            <option value="{{ country }}">{{ country }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="city">City (optional):</label>
+        <select name="city" id="city" class="form-control"></select>
+    </div>
+    <button type="button" class="btn btn-primary">Show Map</button>
+</form>
+<div id="mapContainer" style="height: 400px;"></div>
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header" id="cityName">
+                    <!-- City name will be filled by JavaScript -->
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Capital City</th>
+                                <th>Country</th>
+                                <th>Distance (km)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="infoTable">
+                            <!-- Table content will be filled by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
