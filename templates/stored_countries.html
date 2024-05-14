@@ -37,7 +37,7 @@ function loadStoredCountries() {
                 var details = JSON.parse(entry.data); // Parsing each entry's data
                 content += '<div class="mb-3">';
                 content += '<h4>' + country + '</h4>'; // Country name as main heading
-                content += '<h5><a href="/?country=' + encodeURIComponent(country) + '&city=' + encodeURIComponent(entry.city_with_most_capitals) + '">' + entry.city_with_most_capitals + '</a> (' + entry.own_capital_distance.toFixed(2) + ' km to ' + entry.own_capital + ')</h5>';
+                content += '<h5><a href="/?country=' + encodeURIComponent(country) + '&city=' + encodeURIComponent(entry.city_with_most_capitals) + '">' + entry.city_with_most_capitals + '</a></h5>';
                 content += '<h5>' + entry.city_with_most_capitals + '</h5>'; // Subheading with the city having most closer capitals
                 content += '<table class="table table-sm table-bordered"><thead><tr><th>#</th><th>Capital City</th><th>Country</th><th>Distance (km)</th></tr></thead><tbody>';
 
