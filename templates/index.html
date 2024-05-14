@@ -29,24 +29,7 @@
 <script>
     $(document).ready(function() {
         // Function to get URL parameters
-        function getURLParameter(name) {
-            return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
-        }
-    
-        // Load cities when a country is selected
-        function updateCities(country, city) {
-            if (!country) {
-                $('#city').empty().prop('disabled', true);
-                return;
-            }
-            $.getJSON('/get_cities/' + country, function(data) {
-                $('#city').empty().prop('disabled', false).append('<option value="">Please select a city</option>');
-                data.forEach(function(cityOption) {
-                    $('#city').append($('<option>').val(cityOption).text(cityOption).prop('selected', cityOption === city));
-                });
-                if (city) showMap();  // Automatically display the map if city is provided
-            });
-        }
+        
     
         // Extract parameters and trigger map loading if present
         var country = getURLParameter('country');
@@ -60,20 +43,40 @@
             updateCities($(this).val());
         });
     
-        function showMap() {
-            $.post('/get_map', $('#mapForm').serialize(), function(response) {
-                $('#mapContainer').html(response.map);
-                var count = 0;
-                var tableContent = '';
-                response.info.closer_capitals.forEach(function(capital) {
-                    ++count;
-                    tableContent += '<tr><td>' + count + '</td><td>' + capital[0] + '</td><td>' + capital[2] + '</td><td>' + capital[1].toFixed(2) + '</td></tr>';
-                });
-                $('#infoTable').html(tableContent);
-                $('#cityName').html('<h3>' + response.info.selected_city + '</h3>');
-            }, 'json');
-        }
+        
     });
+    function showMap() {
+        $.post('/get_map', $('#mapForm').serialize(), function(response) {
+            $('#mapContainer').html(response.map);
+            var count = 0;
+            var tableContent = '';
+            response.info.closer_capitals.forEach(function(capital) {
+                ++count;
+                tableContent += '<tr><td>' + count + '</td><td>' + capital[0] + '</td><td>' + capital[2] + '</td><td>' + capital[1].toFixed(2) + '</td></tr>';
+            });
+            $('#infoTable').html(tableContent);
+            $('#cityName').html('<h3>' + response.info.selected_city + '</h3>');
+        }, 'json');
+    };
+
+    function getURLParameter(name) {
+        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
+    };
+
+    // Load cities when a country is selected
+    function updateCities(country, city) {
+        if (!country) {
+            $('#city').empty().prop('disabled', true);
+            return;
+        }
+        $.getJSON('/get_cities/' + country, function(data) {
+            $('#city').empty().prop('disabled', false).append('<option value="">Please select a city</option>');
+            data.forEach(function(cityOption) {
+                $('#city').append($('<option>').val(cityOption).text(cityOption).prop('selected', cityOption === city));
+            });
+            if (city) showMap();  // Automatically display the map if city is provided
+        });
+    };
 
 </script>
 {% endblock %}
