@@ -56,6 +56,12 @@ def get_or_create_data(country, city=None):
 def index():    
     return render_template('index.html', countries=countries)
 
+
+@app.route('/info', methods=['GET'])
+def info():
+    return render_template('info.html')
+
+
 @app.route('/stored-countries')
 def stored_countries():
     return render_template('stored_countries.html')
