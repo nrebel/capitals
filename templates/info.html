@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Information</h1>
+    <h2>Disclaimer</h2>
+    <p>
+        This web app is provided without any warranty and is intended as a fun project. If you encounter any bugs, please feel free to reach out to me.
+    </p>
+    <h2>Data Source</h2>
+    <p>
+        The data used in this app is sourced from a .csv file available at 
+        <a href="https://simplemaps.com/data/world-cities" target="_blank">SimpleMaps</a> 
+        (basic and free version).
+    </p>
+    <h2>Distance Calculation</h2>
+    <p>
+        Distances are calculated using the 
+        <a href="https://en.wikipedia.org/wiki/Haversine_formula" target="_blank">Haversine formula</a>.
+    </p>
+    <h2>How It Works</h2>
+    <p>
+        If you select a country <em>without</em> choosing a specific city, the app determines the city within that country with the highest number of capitals closer to it than to its own capital. This involves iterating over all cities in the country and calculating the distance to all capitals.
+    </p>
+    <p>
+        If you select a specific city within a country, the app calculates and displays the distances from that chosen city to all the world's capitals that are closer to <em>this</em> city than its own capital is.
+    </p>
+    <div class="alert" role="alert" style="background-color: #ffcccb; border-color: #ff6347; color: #d32f2f;">
+        This process can be time-consuming if you are the first person to request data for a specific country. Once a 'winning city' for a country is determined, the result is stored in a database, leading to faster access for subsequent requests.
+    </div>
+    <h2>Stored Countries</h2>
+    <p>
+        On the "Stored Countries" page, you can view all countries for which a request has already been processed, along with the results.
+    </p>
+</div>
+{% endblock %}
