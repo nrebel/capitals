@@ -91,7 +91,7 @@ $(document).ready(function() {
             var tableContent = '';
             response.info.closer_capitals.forEach(function(capital) {
                 ++count;
-                tableContent += '<tr><td>' + count + '</td><td><a href="/?country=' + encodeURIComponent(capital[2]) + '&city=' + encodeURIComponent(capital[0]) + '">' + capital[0] + '</td><td>' + capital[2] + '</td><td>' + capital[1].toFixed(2) + ' km</td></tr>';
+                tableContent += '<tr><td>' + count + '</td><td>' + capital[0] + '</td><td><a href="/?country=' + encodeURIComponent(capital[2]) + '">' + capital[2] + '</td><td>' + capital[1].toFixed(2) + ' km</td></tr>';
             });
             $('#infoTable').html(tableContent);
             $('#cityName').html('<h3>' + response.info.selected_city + '</h3>');
