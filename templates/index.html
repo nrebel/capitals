@@ -1,5 +1,60 @@
 {% extends 'base.html' %}
 
+{% block content %}
+<h1>Capitals Visualizer</h1>
+<div class="info-box">
+    <h3>How to use</h3>
+    <p>Choose a country and press the button to visualize the chosen country's city with the most foreign capitals that are closer than its own capital.
+       If you select a specific city for a chosen country then the map shows all foreign capitals that are closer to that city than the capital of its own country.</p>
+</div>
+<form id="mapForm">
+    <div class="form-group">
+        <label for="country">Country:</label>
+        <select name="country" id="country" class="form-control">
+            <option value="">Select a country</option>
+            {% for country in countries %}
+            <option value="{{ country }}">{{ country }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="city">City (optional):</label>
+        <select name="city" id="city" class="form-control"></select>
+    </div>
+    <button type="button" class="btn btn-primary">Show Map</button>
+</form>
+<!-- Separate container for the map to ensure it does not overlap with the table -->
+<div id="mapContainer" style="height: 400px;"></div>
+
+<!-- Ensure there is clear separation by using a distinct container for the table -->
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header" id="cityName">
+                    <!-- City name will be filled by JavaScript -->
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Capital City</th>
+                                <th>Country</th>
+                                <th>Distance (km)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="infoTable">
+                            <!-- Table content will be filled by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
 {% block scripts %}
 <script>
 $(document).ready(function() {
@@ -36,7 +91,7 @@ $(document).ready(function() {
             var tableContent = '';
             response.info.closer_capitals.forEach(function(capital) {
                 ++count;
-                tableContent += '<tr><td>' + count + '</td><td>' + capital[0] + '</td><td>' + capital[2] + '</td><td>' + capital[1].toFixed(2) + ' km</td></tr>';
+                tableContent += '<tr><td>' + count + '</td><td><a href="/?country=' + encodeURIComponent(capital[2]) + '&city=' + encodeURIComponent(capital[0]) + '">' + capital[0] + '</td><td>' + capital[2] + '</td><td>' + capital[1].toFixed(2) + ' km</td></tr>';
             });
             $('#infoTable').html(tableContent);
             $('#cityName').html('<h3>' + response.info.selected_city + '</h3>');
@@ -55,67 +110,14 @@ $(document).ready(function() {
 
     // Check for initial URL parameters and set up the page
     let country = getURLParameter('country');
-    let city = getURLParameter('city');
-    if (country && city) {
+    if (country ) {
         $('#country').val(country);
-        updateCities(country, city);
+        showMap();
     }
 
     // Add event listener to button
     $('#mapForm button').click(showMap);
 });
-
 </script>
 {% endblock %}
 
-{% block content %}
-<h1>Capitals Visualizer</h1>
-<div class="info-box">
-    <h3>How to use</h3>
-    <p>Choose a country and press the button to visualize the chosen country's city with the most foreign capitals that are closer than its own capital.
-       If you select a specific city for a chosen country then the map shows all foreign capitals that are closer to that city than the capital of its own country.</p>
-</div>
-<form id="mapForm">
-    <div class="form-group">
-        <label for="country">Country:</label>
-        <select name="country" id="country" class="form-control">
-            <option value="">Select a country</option>
-            {% for country in countries %}
-            <option value="{{ country }}">{{ country }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="city">City (optional):</label>
-        <select name="city" id="city" class="form-control"></select>
-    </div>
-    <button type="button" class="btn btn-primary">Show Map</button>
-</form>
-<div id="mapContainer" style="height: 400px;"></div>
-<div class="container mt-3">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header" id="cityName">
-                    <!-- City name will be filled by JavaScript -->
-                </div>
-                <div class="card-body">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Capital City</th>
-                                <th>Country</th>
-                                <th>Distance (km)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="infoTable">
-                            <!-- Table content will be filled by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
