@@ -1,0 +1,12 @@
+# Exclude virtual environments
+venv/
+__pycache__/
+.mypy_cache/
+
+# Exclude git metadata
+.git
+.gitignore
+
+# Exclude macOS metadata
+.DS_Store
+__MACOSX/
