@@ -22,13 +22,13 @@ countries = sorted(world_cities['country'].unique())
 with app.app_context():
     db.create_all()  # Create database tables based on models if not exist
 
-    
+
 def get_or_create_data(country, city=None):
     if city:
         map_data = CityMap.query.filter_by(country=country, city=city).first()
     else:
         map_data = CountryMap.query.filter_by(country=country).first()
-    
+
     if map_data:
         data = json.loads(map_data.data)
     else:
@@ -83,7 +83,7 @@ def get_map():
         'selected_city': data['city'],
         'closer_capitals': data['closer_capitals']
     }
-    
+
     return jsonify({'map': map_html, 'info': info_data})
 
 @app.route('/list_countries')
@@ -96,6 +96,7 @@ def list_countries():
             'data': entry.data  # Ensure this data is in a JSON-serializable format
         })
     return jsonify(countries_info)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=1111, debug=True)

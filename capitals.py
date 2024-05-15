@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import folium
 
+
 def create_map_with_arcs(city_data, file_path):
     # Load data for coordinates
     world_cities = pd.read_csv(file_path)
@@ -15,27 +16,27 @@ def create_map_with_arcs(city_data, file_path):
     city_map = folium.Map(location=[target_city['lat'], target_city['lng']], zoom_start=4)
 
     # Add marker for the target city
-    folium.Marker([target_city['lat'], target_city['lng']], 
-                  popup=f"{city_data['city_data']['city']} (Own City), {count} closer capitals", 
+    folium.Marker([target_city['lat'], target_city['lng']],
+                  popup=f"{city_data['city_data']['city']} (Own City), {count} closer capitals",
                   icon=folium.Icon(color='green')).add_to(city_map)
 
     # Add marker for the own capital with different color arc
-    folium.Marker([own_capital['lat'], own_capital['lng']], 
-                  popup=f"{own_capital['city']} (Own Capital, {haversine(target_city['lng'], target_city['lat'], own_capital['lng'], own_capital['lat']):.2f} km)", 
+    folium.Marker([own_capital['lat'], own_capital['lng']],
+                  popup=f"{own_capital['city']} (Own Capital, {haversine(target_city['lng'], target_city['lat'], own_capital['lng'], own_capital['lat']): .2f} km)",
                   icon=folium.Icon(color='red')).add_to(city_map)
 
     # Draw an arc to own capital
-    folium.PolyLine(locations=[[target_city['lat'], target_city['lng']], 
-                               [own_capital['lat'], own_capital['lng']]], 
-                    color="red", weight=2, tooltip=f"{haversine(target_city['lng'], target_city['lat'], own_capital['lng'], own_capital['lat']):.2f} km").add_to(city_map)
+    folium.PolyLine(locations=[[target_city['lat'], target_city['lng']],
+                               [own_capital['lat'], own_capital['lng']]],
+                    color="red", weight=2, tooltip=f"{haversine(target_city['lng'], target_city['lat'], own_capital['lng'], own_capital['lat']): .2f} km").add_to(city_map)
 
     # Draw arcs to closer capitals
     for capital in city_data['closer_capitals']:
         cap_info = capitals[capitals['city'] == capital[0]].iloc[0]
         folium.PolyLine(locations=[[target_city['lat'], target_city['lng']], [cap_info['lat'], cap_info['lng']]],
-                        color="blue", weight=1, tooltip=f"{capital[1]:.2f} km").add_to(city_map)
-        folium.Marker([cap_info['lat'], cap_info['lng']], 
-                      popup=f"{cap_info['city']} ({cap_info['country']}, {capital[1]:.2f} km)", 
+                        color="blue", weight=1, tooltip=f"{capital[1]: .2f} km").add_to(city_map)
+        folium.Marker([cap_info['lat'], cap_info['lng']],
+                      popup=f"{cap_info['city']} ({cap_info['country']}, {capital[1]: .2f} km)",
                       icon=folium.Icon(color='blue')).add_to(city_map)
 
     return city_map
@@ -52,6 +53,7 @@ def haversine(lon1, lat1, lon2, lat2):
     distance = R * c
     return distance
 
+
 def find_city_with_most_closer_capitals(country, file_path):
     # Load data
     world_cities = pd.read_csv(file_path)
@@ -61,9 +63,9 @@ def find_city_with_most_closer_capitals(country, file_path):
 
     country_cities = world_cities[world_cities['country'] == country][['city', 'lat', 'lng']]
     country_capital = capitals[capitals['country'] == country]
-    
+
     results = []
-    
+
     if len(country_cities) == 1 or len(country_capital) == 0:
         results.append({
             'city': country_cities['city'],
@@ -72,16 +74,16 @@ def find_city_with_most_closer_capitals(country, file_path):
             'own_capital_distance': 0
         })
         return results[0]
-    
+
     for index, city in country_cities.iterrows():
         city_capitals_distances = []
         own_capital_distance = haversine(city['lng'], city['lat'], country_capital.iloc[0]['lng'], country_capital.iloc[0]['lat'])
-        
+
         for cap_index, capital in capitals.iterrows():
             if capital['country'] != country:  # Exclude own country's capital
                 distance = haversine(city['lng'], city['lat'], capital['lng'], capital['lat'])
                 city_capitals_distances.append((capital['city'], distance, capital['country']))
-        
+
         # Count foreign capitals closer than the own capital
         closer_capitals = [(cap[0], cap[1], cap[2]) for cap in city_capitals_distances if cap[1] < own_capital_distance]
         closer_capitals.sort(key=lambda x: x[1])
@@ -92,10 +94,11 @@ def find_city_with_most_closer_capitals(country, file_path):
             'closer_capitals': closer_capitals,
             'own_capital_distance': own_capital_distance
         })
-    
+
     # Find the city with the maximum number of closer foreign capitals
     most_closer_capitals_city = max(results, key=lambda x: x['closer_capitals_count'])
     return most_closer_capitals_city
+
 
 def get_closer_foreign_capitals(city, country, file_path):
     # Load the data
@@ -107,17 +110,17 @@ def get_closer_foreign_capitals(city, country, file_path):
     own_capital = capitals[capitals['country'] == country].iloc[0]
     # Calculate the distance from the specific city to its own capital
     own_capital_distance = haversine(specific_city['lng'], specific_city['lat'], own_capital['lng'], own_capital['lat'])
-    
+
     # Initialize an empty list to store closer foreign capitals
     closer_capitals = []
-    
+
     # Calculate distances to all foreign capitals and filter
     for index, capital in capitals.iterrows():
         if capital['country'] != country:
             distance = haversine(specific_city['lng'], specific_city['lat'], capital['lng'], capital['lat'])
             if distance < own_capital_distance:
                 closer_capitals.append((capital['city'], distance, capital['country']))
-    
+
     # Sort capitals by distance
     closer_capitals.sort(key=lambda x: x[1])
 
@@ -128,8 +131,9 @@ def get_closer_foreign_capitals(city, country, file_path):
         'closer_capitals': closer_capitals,
         'own_capital_distance': own_capital_distance
     }
-    
+
     return result
+
 
 def find_city_with_most_closer_capitals_worldwide(file_path):
     world_cities = pd.read_csv(file_path)
@@ -149,5 +153,5 @@ def find_city_with_most_closer_capitals_worldwide(file_path):
             winning_country = country
             print("City: ", winning_city['city'], " (", winning_country, " distance to own capital: ", winning_city['own_capital_distance'], "km)")
             print("Number of closer foreign capitals:", winning_city['closer_capitals_count'])
-            
+
     return winning_city, winning_country

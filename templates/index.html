@@ -112,6 +112,7 @@ $(document).ready(function() {
     let country = getURLParameter('country');
     if (country ) {
         $('#country').val(country);
+        updateCities(country, null);
         showMap();
     }
 
