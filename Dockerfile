@@ -4,6 +4,8 @@ FROM python:3.12.3-slim
 # Set the working directory in the container
 WORKDIR /app
 
+RUN mkdir instance
+
 # Copy the requirements file into the container
 COPY requirements.txt .
 
