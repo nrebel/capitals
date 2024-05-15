@@ -2,6 +2,12 @@
 
 {% block content %}
 <h1>Stored Country Data</h1>
+<div class="info-box">
+    <h3>Information about this page</h3>
+    <p>Once the "winning" city was requested for a country the result is saved in a database. So for the next request for that country instead of a calculation only a short database look-up needs to be performed. 
+        Here you can see all countries that have already been stored in the db.
+    </p>
+</div>
 <div id="countriesList"></div> <!-- Container for dynamically loaded country data -->
 {% endblock %}
 
